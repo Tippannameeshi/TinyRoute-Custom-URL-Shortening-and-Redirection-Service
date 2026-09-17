@@ -1,18 +1,34 @@
-import express from "express";
+import { Router } from "express";
 
-const router = express.Router();
+import ApiResponse from "../utils/ApiResponse.js";
+
+import { HTTP_STATUS } from "../constants/httpStatus.js";
+
+import { MESSAGES } from "../constants/messages.js";
+
+const router = Router();
 
 router.get("/", (req, res) => {
 
-    res.status(200).json({
+    return res.status(HTTP_STATUS.OK)
 
-        success: true,
+        .json(
 
-        message: "Server is running",
+            new ApiResponse(
 
-        timestamp: new Date().toISOString()
+                HTTP_STATUS.OK,
 
-    });
+                MESSAGES.SERVER_RUNNING,
+
+                {
+
+                    timestamp: new Date().toISOString()
+
+                }
+
+            )
+
+        );
 
 });
 

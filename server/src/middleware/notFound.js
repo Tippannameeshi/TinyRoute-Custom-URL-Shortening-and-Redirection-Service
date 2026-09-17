@@ -1,10 +1,13 @@
+import { HTTP_STATUS } from "../constants/httpStatus.js";
+import { MESSAGES } from "../constants/messages.js";
+
 const notFound = (req, res) => {
 
-    res.status(404).json({
+    res.status(HTTP_STATUS.NOT_FOUND).json({
 
         success: false,
 
-        message: "Route not found"
+        message: MESSAGES.ROUTE_NOT_FOUND
 
     });
 

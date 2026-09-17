@@ -1,0 +1,35 @@
+CREATE DATABASE IF NOT EXISTS url_shortener
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+USE url_shortener;
+
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    uuid CHAR(36) NOT NULL,
+
+    name VARCHAR(100) NOT NULL,
+
+    email VARCHAR(255) NOT NULL,
+
+    password_hash VARCHAR(255) NOT NULL,
+
+    role ENUM('USER','ADMIN') NOT NULL DEFAULT 'USER',
+
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+
+    UNIQUE KEY uk_users_uuid (uuid),
+
+    UNIQUE KEY uk_users_email (email)
+
+) ENGINE=InnoDB;

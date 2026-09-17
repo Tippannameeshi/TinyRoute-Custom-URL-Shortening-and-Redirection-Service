@@ -3,30 +3,33 @@ import helmet from "helmet";
 import cors from "cors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
 
+import { env } from "./config/env.js";
 import logger from "./config/logger.js";
 
-import { env } from "./config/env.js";
+import routes from "./routes/index.js";
 
-import healthRoutes from "./routes/health.routes.js";
-
-import errorHandler from "./middleware/errorHandler.js";
-
+import limiter from "./middleware/rateLimiter.js";
 import notFound from "./middleware/notFound.js";
+import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 
+app.use(
+    pinoHttp({
+        logger
+    })
+);
+
 app.use(helmet());
 
-app.use(cors({
-
-    origin: env.CLIENT_URL,
-
-    credentials: true
-
-}));
+app.use(
+    cors({
+        origin: env.CLIENT_URL,
+        credentials: true
+    })
+);
 
 app.use(compression());
 
@@ -36,27 +39,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
-app.use(
-
-    pinoHttp({
-
-        logger
-
-    })
-
-);
-
-const limiter = rateLimit({
-
-    windowMs: 15 * 60 * 1000,
-
-    max: 200
-
-});
-
 app.use(limiter);
 
-app.use("/health", healthRoutes);
+app.use("/api/v1", routes);
 
 app.use(notFound);
 

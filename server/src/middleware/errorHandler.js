@@ -1,14 +1,22 @@
+import logger from "../config/logger.js";
+
+import { HTTP_STATUS } from "../constants/httpStatus.js";
+
+import { MESSAGES } from "../constants/messages.js";
+
 const errorHandler = (err, req, res, next) => {
 
-    console.error(err);
+    logger.error(err);
 
-    res.status(err.status || 500).json({
+    res.status(err.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR)
 
-        success: false,
+        .json({
 
-        message: err.message || "Internal Server Error"
+            success: false,
 
-    });
+            message: err.message || MESSAGES.INTERNAL_SERVER_ERROR
+
+        });
 
 };
 
