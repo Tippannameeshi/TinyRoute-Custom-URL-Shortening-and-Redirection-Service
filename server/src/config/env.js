@@ -1,46 +1,44 @@
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 
 dotenv.config();
 
-export const env = {
-    NODE_ENV: process.env.NODE_ENV || "development",
-
-    PORT: Number(process.env.PORT) || 5000,
-
-    CLIENT_URL: process.env.CLIENT_URL,
-
-    DB_HOST: process.env.DB_HOST,
-
-    DB_PORT: Number(process.env.DB_PORT),
-
-    DB_NAME: process.env.DB_NAME,
-
-    DB_USER: process.env.DB_USER,
-
-    DB_PASSWORD: process.env.DB_PASSWORD,
-
-    JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
-
-    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
-
-    ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES,
-
-    REFRESH_TOKEN_EXPIRES: process.env.REFRESH_TOKEN_EXPIRES
-};
-
-const required = [
-    "CLIENT_URL",
-    "DB_HOST",
-    "DB_PORT",
-    "DB_NAME",
-    "DB_USER",
-    "DB_PASSWORD",
-    "JWT_ACCESS_SECRET",
-    "JWT_REFRESH_SECRET"
+const requiredVariables = [
+  "PORT",
+  "DB_HOST",
+  "DB_PORT",
+  "DB_USER",
+  "DB_PASSWORD",
+  "DB_NAME",
+  "JWT_SECRET",
+  "JWT_EXPIRES_IN"
 ];
 
-required.forEach((key) => {
-    if (!process.env[key]) {
-        throw new Error(`Missing environment variable: ${key}`);
-    }
-});
+const missingVariables = requiredVariables.filter(
+  (variable) => !process.env[variable]
+);
+
+if (missingVariables.length > 0) {
+  console.error(
+    `❌ Missing Environment Variables:\n${missingVariables.join("\n")}`
+  );
+  process.exit(1);
+}
+
+module.exports = {
+  nodeEnv: process.env.NODE_ENV || "development",
+
+  port: Number(process.env.PORT),
+
+  db: {
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+  },
+
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN
+  }
+};

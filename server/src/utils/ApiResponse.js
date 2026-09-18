@@ -1,17 +1,41 @@
 class ApiResponse {
+  static success(
+    res,
+    message = "Success",
+    data = null,
+    statusCode = 200
+  ) {
+    return res.status(statusCode).json({
+      success: true,
+      message,
+      data
+    });
+  }
 
-    constructor(statusCode, message, data = null) {
+  static created(
+    res,
+    message = "Created Successfully",
+    data = null
+  ) {
+    return res.status(201).json({
+      success: true,
+      message,
+      data
+    });
+  }
 
-        this.success = true;
-
-        this.statusCode = statusCode;
-
-        this.message = message;
-
-        this.data = data;
-
-    }
-
+  static error(
+    res,
+    message = "Internal Server Error",
+    errors = [],
+    statusCode = 500
+  ) {
+    return res.status(statusCode).json({
+      success: false,
+      message,
+      errors
+    });
+  }
 }
 
-export default ApiResponse;
+module.exports = ApiResponse;

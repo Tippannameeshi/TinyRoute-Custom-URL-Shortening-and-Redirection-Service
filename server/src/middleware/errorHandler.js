@@ -1,23 +1,34 @@
-import logger from "../config/logger.js";
-
-import { HTTP_STATUS } from "../constants/httpStatus.js";
-
-import { MESSAGES } from "../constants/messages.js";
+const logger = require("../config/logger");
+const ApiResponse = require("../utils/ApiResponse");
 
 const errorHandler = (err, req, res, next) => {
+  let statusCode = err.statusCode || 500;
 
-    logger.error(err);
+  if (err.name === "JsonWebTokenError") {
+    statusCode = 401;
+    err.message = "Invalid authentication token";
+  }
 
-    res.status(err.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  if (err.name === "TokenExpiredError") {
+    statusCode = 401;
+    err.message = "Authentication token has expired";
+  }
 
-        .json({
+  logger.error({
+    requestId: req.requestId,
+    message: err.message,
+    stack: err.stack,
+    statusCode,
+    url: req.originalUrl,
+    method: req.method
+  });
 
-            success: false,
-
-            message: err.message || MESSAGES.INTERNAL_SERVER_ERROR
-
-        });
-
+  return ApiResponse.error(
+    res,
+    err.message || "Internal Server Error",
+    err.errors || [],
+    statusCode
+  );
 };
 
-export default errorHandler;
+module.exports = errorHandler;

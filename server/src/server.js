@@ -1,39 +1,64 @@
-import app from "./app.js";
+const app = require("./app");
 
-import { env } from "./config/env.js";
+const env = require("./config/env");
+const logger = require("./config/logger");
 
-import logger from "./config/logger.js";
+const { pool, testConnection } = require("./database/connection");
 
-import { connectDatabase } from "./config/database.js";
+let server;
 
-const startServer = async () => {
+async function startServer() {
+  try {
+    await testConnection();
 
-    await connectDatabase();
-
-    const server = app.listen(env.PORT, () => {
-
-        logger.info(`Server running on port ${env.PORT}`);
-
+    server = app.listen(env.port, () => {
+      logger.info(`Server started on http://localhost:${env.port}`);
+      logger.info(`Environment: ${env.nodeEnv}`);
     });
+  } catch (error) {
+    logger.error(`Startup failed: ${error.message}`);
+    process.exit(1);
+  }
+}
 
-    const shutdown = () => {
+async function gracefulShutdown(signal) {
+  logger.info(`${signal} received. Shutting down...`);
 
-        logger.info("Shutting down server...");
+  if (server) {
+    server.close(async () => {
+      try {
+        await pool.end();
 
-        server.close(() => {
+        logger.info("MySQL connection pool closed.");
 
-            logger.info("Server stopped");
+        logger.info("Server shutdown completed.");
 
-            process.exit(0);
+        process.exit(0);
+      } catch (error) {
+        logger.error(error);
 
-        });
+        process.exit(1);
+      }
+    });
+  }
+}
 
-    };
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
-    process.on("SIGINT", shutdown);
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 
-    process.on("SIGTERM", shutdown);
+process.on("uncaughtException", (error) => {
+  logger.error("Uncaught Exception");
+  logger.error(error);
 
-};
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+  logger.error("Unhandled Promise Rejection");
+  logger.error(reason);
+
+  process.exit(1);
+});
 
 startServer();

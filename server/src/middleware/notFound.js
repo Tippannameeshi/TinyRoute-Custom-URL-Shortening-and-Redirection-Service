@@ -1,16 +1,8 @@
-import { HTTP_STATUS } from "../constants/httpStatus.js";
-import { MESSAGES } from "../constants/messages.js";
+const AppError = require("../errors/AppError");
+class NotFoundError extends AppError {
+    constructor(message = "Resource not found") {
+        super(message, 404);
+    }
+}
 
-const notFound = (req, res) => {
-
-    res.status(HTTP_STATUS.NOT_FOUND).json({
-
-        success: false,
-
-        message: MESSAGES.ROUTE_NOT_FOUND
-
-    });
-
-};
-
-export default notFound;
+module.exports = NotFoundError;

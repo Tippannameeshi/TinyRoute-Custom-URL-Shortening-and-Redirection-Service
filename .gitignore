@@ -1,12 +1,5 @@
-node_modules/
+node_modules
 .env
-dist/
-coverage/
-logs/
-.vscode/
-.idea/
-.DS_Store
-node_modules/
-.env
-coverage/
-logs/
+logs
+coverage
+dist
