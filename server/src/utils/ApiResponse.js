@@ -1,10 +1,12 @@
 class ApiResponse {
-  static success(
-    res,
-    message = "Success",
-    data = null,
-    statusCode = 200
-  ) {
+  constructor(statusCode, data, message = "Success") {
+    this.success = statusCode < 400;
+    this.statusCode = statusCode;
+    this.message = message;
+    this.data = data;
+  }
+
+  static success(res, statusCode = 200, message = "Success", data = null) {
     return res.status(statusCode).json({
       success: true,
       message,
@@ -12,26 +14,10 @@ class ApiResponse {
     });
   }
 
-  static created(
-    res,
-    message = "Created Successfully",
-    data = null
-  ) {
-    return res.status(201).json({
-      success: true,
-      message,
-      data
-    });
-  }
-
-  static error(
-    res,
-    message = "Internal Server Error",
-    errors = [],
-    statusCode = 500
-  ) {
+  static error(res, statusCode = 500, message = "Error", errorCode = "INTERNAL_ERROR", errors = null) {
     return res.status(statusCode).json({
       success: false,
+      errorCode,
       message,
       errors
     });

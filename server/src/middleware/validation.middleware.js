@@ -1,20 +1,16 @@
 const { validationResult } = require("express-validator");
+const ValidationError = require("../errors/ValidationError");
 
 function validate(req, res, next) {
-    const errors = validationResult(req);
-
-    if (errors.isEmpty()) {
-        return next();
-    }
-
-    return res.status(400).json({
-        success: false,
-        message: "Validation failed",
-        errors: errors.array().map(error => ({
-            field: error.path,
-            message: error.msg
-        }))
-    });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const formattedErrors = errors.array().map(err => ({
+      field: err.path || err.param,
+      message: err.msg
+    }));
+    return next(new ValidationError(formattedErrors));
+  }
+  next();
 }
 
 module.exports = validate;

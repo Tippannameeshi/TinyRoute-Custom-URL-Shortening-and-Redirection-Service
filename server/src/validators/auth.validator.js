@@ -1,59 +1,51 @@
 const { body } = require("express-validator");
+const validate = require("../middleware/validation.middleware");
 
 const registerValidator = [
-  body("first_name")
-    .trim()
-    .notEmpty()
-    .withMessage("First name is required")
-    .isLength({ min: 2, max: 100 }),
-
-  body("last_name")
-    .trim()
-    .notEmpty()
-    .withMessage("Last name is required")
-    .isLength({ min: 2, max: 100 }),
-
-  body("email")
-    .trim()
-    .isEmail()
-    .withMessage("Invalid email address")
-    .normalizeEmail(),
-
+  body("first_name").trim().notEmpty().withMessage("First name is required."),
+  body("last_name").trim().notEmpty().withMessage("Last name is required."),
+  body("email").trim().isEmail().withMessage("Valid email address is required.").normalizeEmail(),
   body("password")
     .isLength({ min: 8 })
-    .withMessage(
-      "Password must contain at least 8 characters"
-    )
+    .withMessage("Password must be at least 8 characters long.")
     .matches(/[A-Z]/)
-    .withMessage(
-      "Password must contain an uppercase letter"
-    )
-    .matches(/[a-z]/)
-    .withMessage(
-      "Password must contain a lowercase letter"
-    )
+    .withMessage("Password must contain at least one uppercase letter.")
     .matches(/[0-9]/)
-    .withMessage(
-      "Password must contain a number"
-    )
-    .matches(/[!@#$%^&*(),.?":{}|<>]/)
-    .withMessage(
-      "Password must contain a special character"
-    )
+    .withMessage("Password must contain at least one number."),
+  validate
 ];
 
 const loginValidator = [
-  body("email")
-    .trim()
-    .isEmail()
-    .withMessage("Invalid email"),
+  body("email").trim().isEmail().withMessage("Valid email is required.").normalizeEmail(),
+  body("password").notEmpty().withMessage("Password is required."),
+  validate
+];
 
-  body("password")
-    .notEmpty()
-    .withMessage("Password is required")
+const forgotPasswordValidator = [
+  body("email").trim().isEmail().withMessage("Valid email is required.").normalizeEmail(),
+  validate
+];
+
+const resetPasswordValidator = [
+  body("token").notEmpty().withMessage("Reset token is required."),
+  body("newPassword")
+    .isLength({ min: 8 })
+    .withMessage("New password must be at least 8 characters long."),
+  validate
+];
+
+const changePasswordValidator = [
+  body("current_password").notEmpty().withMessage("Current password is required."),
+  body("new_password")
+    .isLength({ min: 8 })
+    .withMessage("New password must be at least 8 characters long."),
+  validate
 ];
 
 module.exports = {
   registerValidator,
-  loginValidator
+  loginValidator,
+  forgotPasswordValidator,
+  resetPasswordValidator,
+  changePasswordValidator
 };

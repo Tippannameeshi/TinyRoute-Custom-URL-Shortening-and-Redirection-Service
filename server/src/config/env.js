@@ -1,59 +1,27 @@
 const dotenv = require("dotenv");
+const path = require("path");
 
-dotenv.config();
-
-const requiredVariables = [
-  "PORT",
-
-  "DB_HOST",
-  "DB_PORT",
-  "DB_USER",
-  "DB_PASSWORD",
-  "DB_NAME",
-
-  "JWT_ACCESS_SECRET",
-  "JWT_REFRESH_SECRET",
-
-  "JWT_ACCESS_EXPIRES_IN",
-  "JWT_REFRESH_EXPIRES_IN"
-];
-
-const missing = requiredVariables.filter(
-  (item) => !process.env[item]
-);
-
-if (missing.length) {
-  console.error("\nMissing Environment Variables\n");
-
-  missing.forEach((item) => {
-    console.error(item);
-  });
-
-  process.exit(1);
-}
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 module.exports = {
   nodeEnv: process.env.NODE_ENV || "development",
-
-  port: Number(process.env.PORT),
-
-  db: {
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+  port: Number(process.env.PORT) || 5000,
+  app: {
+    baseUrl: process.env.BASE_URL || "http://localhost:5000",
+    clientUrl: process.env.CLIENT_URL || "http://localhost:5173"
   },
-
+  db: {
+    host: process.env.DB_HOST || "localhost",
+    port: Number(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD || "root",
+    database: process.env.DB_NAME || "url_shortener",
+    connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10
+  },
   jwt: {
-    accessSecret: process.env.JWT_ACCESS_SECRET,
-
-    refreshSecret: process.env.JWT_REFRESH_SECRET,
-
-    accessExpiresIn:
-      process.env.JWT_ACCESS_EXPIRES_IN,
-
-    refreshExpiresIn:
-      process.env.JWT_REFRESH_EXPIRES_IN
+    accessSecret: process.env.JWT_ACCESS_SECRET || "default_access_secret_tinyroute_2026_super_secure",
+    refreshSecret: process.env.JWT_REFRESH_SECRET || "default_refresh_secret_tinyroute_2026_super_secure",
+    accessExpiration: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
+    refreshExpiration: process.env.JWT_REFRESH_EXPIRES_IN || "7d"
   }
 };

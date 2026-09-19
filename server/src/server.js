@@ -1,8 +1,7 @@
 const app = require("./app");
 
 const env = require("./config/env");
-const logger = require("./config/logger");
-
+const { logger } = require("./config/logger");
 const { pool, testConnection } = require("./database/connection");
 
 let server;

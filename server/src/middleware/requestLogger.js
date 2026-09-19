@@ -1,26 +1,22 @@
-const logger = require("../config/logger");
+const { logger } = require("../config/logger");
 
-const requestLogger = (req, res, next) => {
-  const start = process.hrtime.bigint();
+function requestLogger(req, res, next) {
+  const start = Date.now();
 
   res.on("finish", () => {
-    const end = process.hrtime.bigint();
-
-    const responseTime =
-      Number(end - start) / 1000000;
-
+    const duration = Date.now() - start;
     logger.info({
-      requestId: req.requestId,
+      requestId: req.id,
       method: req.method,
       url: req.originalUrl,
-      statusCode: res.statusCode,
-      responseTime: `${responseTime.toFixed(2)} ms`,
+      status: res.statusCode,
+      duration: `${duration}ms`,
       ip: req.ip,
-      userAgent: req.get("User-Agent")
+      userAgent: req.headers["user-agent"]
     });
   });
 
   next();
-};
+}
 
 module.exports = requestLogger;

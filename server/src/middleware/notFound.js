@@ -1,8 +1,7 @@
-const AppError = require("../errors/AppError");
-class NotFoundError extends AppError {
-    constructor(message = "Resource not found") {
-        super(message, 404);
-    }
+const NotFoundError = require("../errors/NotFoundError");
+
+function notFound(req, res, next) {
+  next(new NotFoundError(`Cannot ${req.method} ${req.originalUrl}`, "ROUTE_NOT_FOUND"));
 }
 
-module.exports = NotFoundError;
+module.exports = notFound;

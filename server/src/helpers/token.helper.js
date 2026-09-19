@@ -1,26 +1,16 @@
-const crypto = require("crypto");
+const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
 
-const bcrypt = require("bcrypt");
+const generateAuthTokens = (user, familyId = null) => {
+  const payload = {
+    id: user.id,
+    email: user.email,
+    role: user.role
+  };
 
-async function hashRefreshToken(token) {
-  return bcrypt.hash(token, 10);
-}
+  const accessToken = generateAccessToken(payload);
+  const refreshToken = generateRefreshToken({ ...payload, familyId });
 
-async function compareRefreshToken(
-  token,
-  hash
-) {
-  return bcrypt.compare(token, hash);
-}
-
-function randomToken() {
-  return crypto
-    .randomBytes(64)
-    .toString("hex");
-}
-
-module.exports = {
-  hashRefreshToken,
-  compareRefreshToken,
-  randomToken
+  return { accessToken, refreshToken };
 };
+
+module.exports = { generateAuthTokens };

@@ -1,34 +1,22 @@
-const logger = require("../config/logger");
 const ApiResponse = require("../utils/ApiResponse");
+const { logger } = require("../config/logger");
 
-const errorHandler = (err, req, res, next) => {
-  let statusCode = err.statusCode || 500;
-
-  if (err.name === "JsonWebTokenError") {
-    statusCode = 401;
-    err.message = "Invalid authentication token";
-  }
-
-  if (err.name === "TokenExpiredError") {
-    statusCode = 401;
-    err.message = "Authentication token has expired";
-  }
+function errorHandler(err, req, res, next) {
+  const statusCode = err.statusCode || 500;
+  const errorCode = err.errorCode || "INTERNAL_SERVER_ERROR";
+  const message = err.message || "An unexpected error occurred.";
+  const errors = err.errors || null;
 
   logger.error({
-    requestId: req.requestId,
     message: err.message,
     stack: err.stack,
-    statusCode,
-    url: req.originalUrl,
-    method: req.method
+    requestId: req.id,
+    path: req.originalUrl,
+    method: req.method,
+    ip: req.ip
   });
 
-  return ApiResponse.error(
-    res,
-    err.message || "Internal Server Error",
-    err.errors || [],
-    statusCode
-  );
-};
+  return ApiResponse.error(res, statusCode, message, errorCode, errors);
+}
 
 module.exports = errorHandler;

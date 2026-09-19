@@ -1,8 +1,8 @@
 const AppError = require("./AppError");
 
 class NotFoundError extends AppError {
-  constructor(message = "Resource Not Found") {
-    super(message, 404);
+  constructor(message = "Resource Not Found", errorCode = "NOT_FOUND") {
+    super(message, 404, errorCode);
   }
 }
 
