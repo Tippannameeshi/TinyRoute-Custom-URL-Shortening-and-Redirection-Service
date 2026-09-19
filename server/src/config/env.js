@@ -4,23 +4,31 @@ dotenv.config();
 
 const requiredVariables = [
   "PORT",
+
   "DB_HOST",
   "DB_PORT",
   "DB_USER",
   "DB_PASSWORD",
   "DB_NAME",
-  "JWT_SECRET",
-  "JWT_EXPIRES_IN"
+
+  "JWT_ACCESS_SECRET",
+  "JWT_REFRESH_SECRET",
+
+  "JWT_ACCESS_EXPIRES_IN",
+  "JWT_REFRESH_EXPIRES_IN"
 ];
 
-const missingVariables = requiredVariables.filter(
-  (variable) => !process.env[variable]
+const missing = requiredVariables.filter(
+  (item) => !process.env[item]
 );
 
-if (missingVariables.length > 0) {
-  console.error(
-    `❌ Missing Environment Variables:\n${missingVariables.join("\n")}`
-  );
+if (missing.length) {
+  console.error("\nMissing Environment Variables\n");
+
+  missing.forEach((item) => {
+    console.error(item);
+  });
+
   process.exit(1);
 }
 
@@ -38,7 +46,14 @@ module.exports = {
   },
 
   jwt: {
-    secret: process.env.JWT_SECRET,
-    expiresIn: process.env.JWT_EXPIRES_IN
+    accessSecret: process.env.JWT_ACCESS_SECRET,
+
+    refreshSecret: process.env.JWT_REFRESH_SECRET,
+
+    accessExpiresIn:
+      process.env.JWT_ACCESS_EXPIRES_IN,
+
+    refreshExpiresIn:
+      process.env.JWT_REFRESH_EXPIRES_IN
   }
 };

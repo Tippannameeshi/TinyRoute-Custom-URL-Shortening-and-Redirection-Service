@@ -6,7 +6,7 @@ CREATE TABLE urls
 
     user_id BIGINT UNSIGNED NOT NULL,
 
-    original_url TEXT NOT NULL,
+    original_url VARCHAR(2048) NOT NULL,
 
     short_code VARCHAR(20) NOT NULL,
 
