@@ -5,12 +5,7 @@ import { ROUTES } from "../../constants/routes";
 import { Alert } from "../common/Alert";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
-import {
-  Mail,
-  Lock,
-  ArrowRight,
-  ShieldCheck,
-} from "lucide-react";
+import { Mail, Lock, ArrowRight, ShieldCheck } from "lucide-react";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -31,7 +26,10 @@ export const LoginForm = () => {
       await login(email.trim(), password);
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please check your credentials.");
+      setError(
+        err.response?.data?.message ||
+          "Login failed. Please check your credentials.",
+      );
     } finally {
       setLoading(false);
     }
@@ -39,38 +37,27 @@ export const LoginForm = () => {
 
   return (
     <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
-
       {/* Header */}
 
       <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-600 px-8 py-8 text-white">
-
         <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
           <ShieldCheck size={32} />
         </div>
 
-        <h2 className="text-3xl font-extrabold">
-          Welcome Back
-        </h2>
+        <h2 className="text-3xl font-extrabold">Welcome Back</h2>
 
         <p className="mt-2 text-sm text-indigo-100">
-          Sign in to manage your shortened URLs, analytics, and account settings.
+          Sign in to manage your shortened URLs, analytics, and account
+          settings.
         </p>
-
       </div>
 
       {/* Body */}
 
       <div className="space-y-6 p-8">
+        <Alert message={error} onClose={() => setError(null)} />
 
-        <Alert
-          message={error}
-          onClose={() => setError(null)}
-        />
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="space-y-5">
           <Input
             label="Email Address"
             type="email"
@@ -82,9 +69,7 @@ export const LoginForm = () => {
           />
 
           <div>
-
             <div className="mb-2 flex items-center justify-between">
-
               <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Password
               </label>
@@ -95,7 +80,6 @@ export const LoginForm = () => {
               >
                 Forgot Password?
               </Link>
-
             </div>
 
             <Input
@@ -106,7 +90,6 @@ export const LoginForm = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
             />
-
           </div>
 
           <Button
@@ -118,13 +101,11 @@ export const LoginForm = () => {
           >
             Sign In
           </Button>
-
         </form>
 
         {/* Divider */}
 
         <div className="flex items-center">
-
           <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
 
           <span className="px-4 text-xs uppercase tracking-wider text-slate-400">
@@ -132,13 +113,11 @@ export const LoginForm = () => {
           </span>
 
           <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
-
         </div>
 
         {/* Register */}
 
         <div className="text-center">
-
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Don't have an account?
           </p>
@@ -149,11 +128,8 @@ export const LoginForm = () => {
           >
             Create Free Account
           </Link>
-
         </div>
-
       </div>
-
     </div>
   );
 };

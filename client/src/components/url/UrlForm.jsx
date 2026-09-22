@@ -1,25 +1,41 @@
-import React, { useState } from 'react';
-import { Alert } from '../common/Alert';
-import { Input } from '../ui/Input';
-import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
-import { Link2, Globe, FileText, Lock, Calendar, Star, Hash } from 'lucide-react';
+import React, { useState } from "react";
+import { Alert } from "../common/Alert";
+import { Input } from "../ui/Input";
+import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
+import {
+  Link2,
+  Globe,
+  FileText,
+  Lock,
+  Calendar,
+  Star,
+  Hash,
+} from "lucide-react";
 
-export const UrlForm = ({ initialData = {}, onSubmit, isEditing = false, loading = false }) => {
+export const UrlForm = ({
+  initialData = {},
+  onSubmit,
+  isEditing = false,
+  loading = false,
+}) => {
   const [formData, setFormData] = useState({
-    original_url: initialData.original_url || '',
-    custom_alias: initialData.custom_alias || '',
-    title: initialData.title || '',
-    description: initialData.description || '',
-    max_clicks: initialData.max_clicks || '',
-    password: '',
-    expires_at: initialData.expires_at ? new Date(initialData.expires_at).toISOString().slice(0, 16) : '',
-    is_favorite: initialData.is_favorite || false
+    original_url: initialData.original_url || "",
+    custom_alias: initialData.custom_alias || "",
+    title: initialData.title || "",
+    description: initialData.description || "",
+    max_clicks: initialData.max_clicks || "",
+    password: "",
+    expires_at: initialData.expires_at
+      ? new Date(initialData.expires_at).toISOString().slice(0, 16)
+      : "",
+    is_favorite: initialData.is_favorite || false,
   });
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
   };
 
@@ -29,16 +45,19 @@ export const UrlForm = ({ initialData = {}, onSubmit, isEditing = false, loading
     try {
       const payload = Object.fromEntries(
         Object.entries(formData).filter(
-          ([key, value]) => value !== '' || key === 'is_favorite',
+          ([key, value]) => value !== "" || key === "is_favorite",
         ),
       );
       await onSubmit(payload);
     } catch (err) {
       const validationErrors = err.response?.data?.errors;
       const details = Array.isArray(validationErrors)
-        ? validationErrors.map((item) => item.message).filter(Boolean).join(' ')
-        : '';
-      setError(details || err.response?.data?.message || 'Failed to save URL.');
+        ? validationErrors
+            .map((item) => item.message)
+            .filter(Boolean)
+            .join(" ")
+        : "";
+      setError(details || err.response?.data?.message || "Failed to save URL.");
     }
   };
 
@@ -121,7 +140,7 @@ export const UrlForm = ({ initialData = {}, onSubmit, isEditing = false, loading
             icon={Lock}
             value={formData.password}
             onChange={handleChange}
-            placeholder={isEditing ? 'Unchanged' : 'Optional password'}
+            placeholder={isEditing ? "Unchanged" : "Optional password"}
           />
 
           <Input
@@ -143,7 +162,10 @@ export const UrlForm = ({ initialData = {}, onSubmit, isEditing = false, loading
             onChange={handleChange}
             className="w-4 h-4 text-indigo-600 rounded-xs border-slate-300 focus:ring-indigo-500"
           />
-          <label htmlFor="is_favorite" className="ml-2 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center">
+          <label
+            htmlFor="is_favorite"
+            className="ml-2 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center"
+          >
             <Star className="w-3.5 h-3.5 mr-1.5 text-amber-500 fill-amber-400" />
             Mark as Favorite Link
           </label>
@@ -151,7 +173,7 @@ export const UrlForm = ({ initialData = {}, onSubmit, isEditing = false, loading
 
         <div className="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-800/80">
           <Button type="submit" isLoading={loading} size="md" icon={Link2}>
-            {isEditing ? 'Update Short URL' : 'Create Short URL'}
+            {isEditing ? "Update Short URL" : "Create Short URL"}
           </Button>
         </div>
       </form>
