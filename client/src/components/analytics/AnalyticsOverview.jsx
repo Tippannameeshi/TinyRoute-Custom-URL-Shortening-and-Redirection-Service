@@ -7,6 +7,9 @@ import { OSChart } from "./OSChart";
 import { ReferrerList } from "./ReferrerList";
 import { RecentVisitorsTable } from "./RecentVisitorsTable";
 
+const cardClass =
+  "overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900";
+
 export const AnalyticsOverview = ({
   charts = {},
   recentVisitors = [],
@@ -15,15 +18,11 @@ export const AnalyticsOverview = ({
 }) => {
   return (
     <div className="space-y-8">
-
       {onRangeChange && (
-        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
-
-          {/* Background Decoration */}
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-indigo-50 via-white to-cyan-50 opacity-80 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800"></div>
+        <div className={`${cardClass} relative p-6`}>
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-indigo-50 via-white to-cyan-50 opacity-80 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800" />
 
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                 Analytics Performance Overview
@@ -35,7 +34,6 @@ export const AnalyticsOverview = ({
             </div>
 
             <div className="flex flex-wrap gap-3">
-
               {["7d", "30d", "90d"].map((r) => (
                 <button
                   key={r}
@@ -49,50 +47,40 @@ export const AnalyticsOverview = ({
                   Last {r.toUpperCase()}
                 </button>
               ))}
-
             </div>
-
           </div>
-
         </div>
       )}
 
-      {/* Main Click Trend */}
-
-      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+      <div className={`${cardClass} hover:shadow-xl`}>
         <ClickChart data={charts.clicksTrend} />
       </div>
 
-      {/* Analytics Grid */}
-
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+        <div className={cardClass}>
           <BrowserChart data={charts.browsers} />
         </div>
 
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+        <div className={cardClass}>
           <DeviceChart data={charts.devices} />
         </div>
 
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+        <div className={cardClass}>
           <CountryChart data={charts.countries} />
         </div>
 
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+        <div className={cardClass}>
           <OSChart data={charts.osList} />
         </div>
-
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+      <div className={cardClass}>
         <ReferrerList data={charts.referrers} />
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900">
+      <div className={cardClass}>
         <RecentVisitorsTable visitors={recentVisitors} />
       </div>
-
     </div>
   );
 };

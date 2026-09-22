@@ -27,9 +27,18 @@ export const UrlForm = ({ initialData = {}, onSubmit, isEditing = false, loading
     e.preventDefault();
     setError(null);
     try {
-      await onSubmit(formData);
+      const payload = Object.fromEntries(
+        Object.entries(formData).filter(
+          ([key, value]) => value !== '' || key === 'is_favorite',
+        ),
+      );
+      await onSubmit(payload);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save URL.');
+      const validationErrors = err.response?.data?.errors;
+      const details = Array.isArray(validationErrors)
+        ? validationErrors.map((item) => item.message).filter(Boolean).join(' ')
+        : '';
+      setError(details || err.response?.data?.message || 'Failed to save URL.');
     }
   };
 

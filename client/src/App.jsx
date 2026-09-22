@@ -1,7 +1,10 @@
-import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { Suspense } from 'react';
+
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+
+import { LoadingSpinner } from './components/common/LoadingSpinner';
 import { AppRoutes } from './routes/AppRoutes';
 
 function App() {
@@ -9,7 +12,17 @@ function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <AppRoutes />
+          <Suspense
+            fallback={
+              <LoadingSpinner
+                fullPage
+                size="large"
+                message="Loading..."
+              />
+            }
+          >
+            <AppRoutes />
+          </Suspense>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

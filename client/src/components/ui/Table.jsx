@@ -15,25 +15,40 @@ export const Table = ({
   className = '',
 }) => {
   return (
-    <div className={`w-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-xs ${className}`}>
-      <div className="overflow-x-auto max-w-full">
-        <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300 border-collapse">
-          <thead className={`text-[11px] font-bold uppercase tracking-wider bg-slate-50/90 dark:bg-slate-800/90 text-slate-500 dark:text-slate-400 border-b border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xs ${stickyHeader ? 'sticky top-0 z-10' : ''}`}>
+    <div
+      className={`overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 shadow-sm ${className}`}
+    >
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse text-sm">
+          {/* Header */}
+          <thead
+            className={`bg-slate-50/90 dark:bg-slate-800/90 backdrop-blur-md ${
+              stickyHeader ? 'sticky top-0 z-20' : ''
+            }`}
+          >
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key || col.header}
+                  aria-sort={
+                    sortColumn === col.key
+                      ? sortDirection === 'asc'
+                        ? 'ascending'
+                        : 'descending'
+                      : 'none'
+                  }
                   onClick={() => col.sortable && onSort(col.key)}
-                  className={`px-4 py-3.5 whitespace-nowrap ${
+                  className={`group px-4 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200/80 dark:border-slate-800/80 whitespace-nowrap ${
                     col.sortable
-                      ? 'cursor-pointer select-none hover:text-slate-900 dark:hover:text-white transition-colors'
+                      ? 'cursor-pointer select-none transition-colors hover:text-slate-900 dark:hover:text-white'
                       : ''
                   } ${col.className || ''}`}
                 >
-                  <div className="flex items-center space-x-1.5">
+                  <div className="flex items-center gap-1.5">
                     <span>{col.header}</span>
+
                     {col.sortable && (
-                      <span className="text-slate-400">
+                      <>
                         {sortColumn === col.key ? (
                           sortDirection === 'asc' ? (
                             <ChevronUp className="w-3.5 h-3.5 text-indigo-500" />
@@ -41,11 +56,9 @@ export const Table = ({
                             <ChevronDown className="w-3.5 h-3.5 text-indigo-500" />
                           )
                         ) : (
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            <ChevronDown className="w-3.5 h-3.5" />
-                          </div>
+                          <ChevronDown className="w-3.5 h-3.5 opacity-0 group-hover:opacity-60 transition-opacity" />
                         )}
-                      </span>
+                      </>
                     )}
                   </div>
                 </th>
@@ -53,31 +66,38 @@ export const Table = ({
             </tr>
           </thead>
 
+          {/* Body */}
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
             {loading ? (
-              [1, 2, 3, 4, 5].map((n) => (
-                <tr key={n}>
-                  {columns.map((_, idx) => (
-                    <td key={idx} className="px-4 py-3.5 whitespace-nowrap">
+              Array.from({ length: 5 }).map((_, row) => (
+                <tr key={row}>
+                  {columns.map((_, col) => (
+                    <td key={col} className="px-4 py-4">
                       <Skeleton className="h-4 w-full" />
                     </td>
                   ))}
                 </tr>
               ))
-            ) : data && data.length > 0 ? (
-              data.map((row, rowIndex) => (
+            ) : data.length > 0 ? (
+              data.map((row, index) => (
                 <tr
-                  key={row.id || rowIndex}
-                  className={`transition-colors hover:bg-slate-50/90 dark:hover:bg-slate-800/50 ${
-                    zebra && rowIndex % 2 === 1 ? 'bg-slate-50/40 dark:bg-slate-900/40' : ''
+                  key={row.id || index}
+                  className={`transition-colors duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/40 ${
+                    zebra && index % 2 !== 0
+                      ? 'bg-slate-50/40 dark:bg-slate-900/40'
+                      : ''
                   }`}
                 >
                   {columns.map((col) => (
                     <td
                       key={col.key || col.header}
-                      className={`px-4 py-3.5 text-slate-700 dark:text-slate-200 text-sm ${col.cellClassName || ''}`}
+                      className={`px-4 py-3.5 text-sm text-slate-700 dark:text-slate-200 align-middle ${
+                        col.cellClassName || ''
+                      }`}
                     >
-                      {col.render ? col.render(row[col.key], row) : row[col.key]}
+                      {col.render
+                        ? col.render(row[col.key], row)
+                        : row[col.key]}
                     </td>
                   ))}
                 </tr>
@@ -86,11 +106,22 @@ export const Table = ({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-4 py-14 text-center text-slate-400 dark:text-slate-500"
+                  className="px-6 py-16 text-center"
                 >
-                  <div className="flex flex-col items-center justify-center space-y-2">
-                    <Inbox className="w-8 h-8 stroke-1 text-slate-300 dark:text-slate-600" />
-                    <p className="text-sm font-medium">{emptyMessage}</p>
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+                      <Inbox className="h-7 w-7 text-slate-400 dark:text-slate-500" />
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        {emptyMessage}
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+                        Try changing your filters or create a new record.
+                      </p>
+                    </div>
                   </div>
                 </td>
               </tr>

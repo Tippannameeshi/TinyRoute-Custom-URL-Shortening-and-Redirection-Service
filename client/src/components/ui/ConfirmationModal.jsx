@@ -1,40 +1,90 @@
-import React from 'react';
-import { Modal } from '../common/Modal';
-import { Button } from './Button';
-import { AlertTriangle } from 'lucide-react';
+import React from "react";
+import { AlertTriangle, Trash2, X } from "lucide-react";
+import { Modal } from "../common/Modal";
+import { Button } from "./Button";
 
 export const ConfirmationModal = ({
   isOpen,
   onClose,
   onConfirm,
-  title = 'Confirm Action',
-  message = 'Are you sure you want to perform this action? This cannot be undone.',
-  confirmText = 'Delete',
-  variant = 'danger',
-  loading = false
+  title = "Confirm Action",
+  message = "Are you sure you want to perform this action? This action cannot be undone.",
+  confirmText = "Delete",
+  variant = "danger",
+  loading = false,
 }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <div className="space-y-4 pt-1">
-        <div className="flex items-start space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-            <AlertTriangle className="w-5 h-5" />
+    <Modal
+      isOpen={isOpen}
+      onClose={loading ? undefined : onClose}
+      title={title}
+    >
+      <div className="space-y-6">
+
+        {/* Warning Section */}
+        <div className="flex items-start gap-4">
+
+          <div
+            className="
+              flex
+              h-12
+              w-12
+              shrink-0
+              items-center
+              justify-center
+              rounded-2xl
+              bg-rose-100
+              dark:bg-rose-950/50
+              border
+              border-rose-200
+              dark:border-rose-900
+            "
+          >
+            <AlertTriangle className="h-6 w-6 text-rose-600 dark:text-rose-400" />
           </div>
-          <div>
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+
+          <div className="flex-1">
+
+            <h4 className="font-semibold text-slate-900 dark:text-white">
+              {title}
+            </h4>
+
+            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
               {message}
             </p>
+
           </div>
+
         </div>
 
-        <div className="flex justify-end space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-          <Button variant="ghost" onClick={onClose} disabled={loading}>
+        {/* Divider */}
+
+        <div className="border-t border-slate-200 dark:border-slate-800" />
+
+        {/* Actions */}
+
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={loading}
+            icon={X}
+          >
             Cancel
           </Button>
-          <Button variant={variant} onClick={onConfirm} isLoading={loading}>
-            {confirmText}
+
+          <Button
+            variant={variant}
+            onClick={onConfirm}
+            isLoading={loading}
+            icon={!loading ? Trash2 : null}
+          >
+            {loading ? "Processing..." : confirmText}
           </Button>
+
         </div>
+
       </div>
     </Modal>
   );

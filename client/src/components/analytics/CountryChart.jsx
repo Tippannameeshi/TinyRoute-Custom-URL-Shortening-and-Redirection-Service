@@ -23,7 +23,7 @@ export const CountryChart = ({ data = [] }) => {
       </div>
 
       {data.length > 0 ? (
-        <div className="space-y-5 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+        <div className="space-y-5 max-h-80 overflow-y-auto pr-2">
           {data.map((item, idx) => {
             const count = Number(item.count);
             const percentage =

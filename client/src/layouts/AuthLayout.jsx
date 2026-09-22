@@ -1,84 +1,135 @@
-import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
-import { ROUTES } from '../constants/routes';
-import { Link2, ShieldCheck, Zap, BarChart3, CheckCircle2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React from "react";
+import { Outlet, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Link2, ShieldCheck, Zap, BarChart3, CheckCircle2 } from "lucide-react";
+
+import { ROUTES } from "../constants/routes";
+
+const FEATURES = [
+  {
+    icon: Zap,
+    title: "Base62 Encoding",
+    description: "Automatic collision detection and unique short links.",
+  },
+  {
+    icon: BarChart3,
+    title: "Advanced Analytics",
+    description:
+      "Track clicks, devices, browsers, operating systems and countries.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Enterprise Security",
+    description: "Password protection, expiration dates and QR code support.",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Production Ready",
+    description: "Designed for scalability, performance and reliability.",
+  },
+];
 
 export const AuthLayout = () => {
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-slate-950 text-white font-sans overflow-hidden">
-      {/* Left Branding Column (SaaS Split Screen) */}
-      <div className="hidden lg:flex flex-col justify-between p-12 auth-bg-gradient relative border-r border-slate-800/80">
-        <div className="space-y-6 relative z-10">
-          <Link to={ROUTES.HOME} className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 group-hover:bg-indigo-500 flex items-center justify-center text-white font-extrabold shadow-lg shadow-indigo-500/30 transition-all">
-              <Link2 className="w-6 h-6 stroke-[2.5]" />
-            </div>
-            <span className="font-extrabold text-2xl tracking-tight text-white">
-              Tiny<span className="text-indigo-400">Route</span>
-            </span>
-          </Link>
+    <div className="app-ambient relative min-h-screen bg-[var(--color-bg)] lg:grid lg:grid-cols-[0.95fr_1.05fr]">
+      {/* Left Side */}
+      <div className="relative hidden overflow-hidden border-r border-[var(--color-border)] bg-[var(--color-bg-elevated)] lg:flex">
+        {/* Background */}
+        <div className="app-grid absolute inset-0 opacity-70" />
 
-          <div className="pt-12 space-y-4 max-w-md">
-            <h1 className="text-4xl font-black tracking-tight leading-tight text-white">
-              Enterprise Short URLs with <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-sky-400">
-                Real-Time Analytics
-              </span>
-            </h1>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              Shorten links, create custom aliases, set password protection, and track geographic & device analytics in a modern SaaS workspace.
-            </p>
-          </div>
+        <div className="absolute -left-20 top-20 h-80 w-80 rounded-full bg-[var(--color-brand)]/10 blur-3xl" />
 
-          {/* Value props list */}
-          <div className="pt-6 space-y-3.5">
-            <div className="flex items-center space-x-3 text-xs font-semibold text-slate-300">
-              <div className="w-6 h-6 rounded-lg bg-indigo-950 border border-indigo-800/80 flex items-center justify-center text-indigo-400">
-                <Zap className="w-3.5 h-3.5" />
-              </div>
-              <span>Base62 Encoding with automatic collision resolution</span>
-            </div>
+        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[var(--color-cyan)]/10 blur-3xl" />
 
-            <div className="flex items-center space-x-3 text-xs font-semibold text-slate-300">
-              <div className="w-6 h-6 rounded-lg bg-indigo-950 border border-indigo-800/80 flex items-center justify-center text-indigo-400">
-                <BarChart3 className="w-3.5 h-3.5" />
-              </div>
-              <span>Browser, OS, Device & Country Analytics charts</span>
-            </div>
-
-            <div className="flex items-center space-x-3 text-xs font-semibold text-slate-300">
-              <div className="w-6 h-6 rounded-lg bg-indigo-950 border border-indigo-800/80 flex items-center justify-center text-indigo-400">
-                <ShieldCheck className="w-3.5 h-3.5" />
-              </div>
-              <span>Password protection, Expiration dates & QR code export</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Testimonial Banner */}
-        <div className="relative z-10 pt-12 border-t border-slate-800/80 flex items-center space-x-4">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-500 flex items-center justify-center font-bold text-sm">
-            TR
-          </div>
+        <div className="relative z-10 flex w-full flex-col justify-between p-14">
+          {/* Logo */}
           <div>
-            <p className="text-xs font-semibold text-slate-200">"TinyRoute powers all our product links with sub-millisecond redirection."</p>
-            <p className="text-[11px] text-slate-500">DevOps & Growth Team</p>
+            <Link to={ROUTES.HOME} className="inline-flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--color-brand)] text-[var(--color-bg)] shadow-[0_8px_24px_rgb(109_124_255_/_0.25)]">
+                <Link2 className="h-6 w-6 text-white" />
+              </div>
+
+              <div>
+                <h1 className="text-2xl font-bold text-[var(--color-text)]">
+                  Tiny
+                  <span className="text-[var(--color-brand)]">Route</span>
+                </h1>
+
+                <p className="text-xs text-[var(--color-text-subtle)]">
+                  Enterprise URL Shortener
+                </p>
+              </div>
+            </Link>
+
+            <div className="mt-20 max-w-lg">
+              <h2 className="text-5xl font-bold leading-tight tracking-[-0.05em] text-[var(--color-text)]">
+                Every link, made legible.
+              </h2>
+
+              <p className="mt-6 text-lg leading-8 text-[var(--color-text-muted)]">
+                Create branded short links, monitor engagement, protect links
+                with passwords, generate QR codes and gain actionable analytics
+                through a clean SaaS dashboard.
+              </p>
+            </div>
+
+            <div className="mt-14 space-y-6">
+              {FEATURES.map((feature) => {
+                const Icon = feature.icon;
+
+                return (
+                  <div key={feature.title} className="flex items-start gap-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-brand-soft)]">
+                      <Icon className="h-5 w-5 text-[var(--color-brand)]" />
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold text-[var(--color-text)]">
+                        {feature.title}
+                      </h3>
+
+                      <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                        {feature.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Bottom Card */}
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+            <div className="flex items-center gap-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--color-brand-soft)] text-sm font-bold text-[var(--color-brand)]">
+                TR
+              </div>
+
+              <div>
+                <p className="font-medium text-[var(--color-text)]">
+                  "TinyRoute powers millions of redirects with enterprise-grade
+                  reliability."
+                </p>
+
+                <p className="mt-1 text-sm text-[var(--color-text-subtle)]">
+                  Engineering Team
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Right Form Column */}
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
-        <div className="w-full max-w-md">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Outlet />
-          </motion.div>
-        </div>
+      {/* Right Side */}
+      <div className="relative flex items-center justify-center bg-[var(--color-bg)] px-6 py-12 transition-colors">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="w-full max-w-md"
+        >
+          <Outlet />
+        </motion.div>
       </div>
     </div>
   );

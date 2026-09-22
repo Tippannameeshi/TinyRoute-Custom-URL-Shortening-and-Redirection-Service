@@ -1,92 +1,158 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from "react";
+import { motion } from "framer-motion";
 
 export const Button = ({
   children,
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   isLoading = false,
   disabled = false,
   icon: Icon = null,
-  iconPosition = 'left',
-  className = '',
-  type = 'button',
+  iconPosition = "left",
+  className = "",
+  type = "button",
   onClick,
+  fullWidth = false,
+  rounded = "xl",
   ...props
 }) => {
-  const baseStyles =
-    'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none tracking-tight';
+  const base =
+    "relative inline-flex items-center justify-center overflow-hidden font-semibold tracking-tight transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
 
   const variants = {
     primary:
-      'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white shadow-sm hover:shadow-indigo-500/25 focus-visible:ring-indigo-500 dark:bg-indigo-600 dark:hover:bg-indigo-500 dark:focus-visible:ring-indigo-400',
+      "bg-[var(--color-brand)] text-[var(--color-bg)] shadow-[0_8px_20px_rgb(109_124_255_/_0.2)] hover:-translate-y-0.5 hover:bg-[var(--color-brand-strong)] focus-visible:ring-[var(--color-brand)]",
+
     secondary:
-      'bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 shadow-sm focus-visible:ring-slate-900 dark:focus-visible:ring-slate-400',
+      "bg-[var(--color-text)] text-[var(--color-bg)] shadow-[var(--shadow-sm)] hover:opacity-90",
+
     outline:
-      'border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 focus-visible:ring-slate-400',
+      "border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-raised)] shadow-[var(--shadow-sm)]",
+
     ghost:
-      'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 focus-visible:ring-slate-400',
+      "bg-transparent text-[var(--color-text-muted)] hover:bg-[var(--color-surface-raised)] hover:text-[var(--color-text)]",
+
     danger:
-      'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white shadow-sm focus-visible:ring-rose-500 dark:bg-rose-600 dark:hover:bg-rose-500',
+      "bg-[var(--color-danger)] text-white shadow-[var(--shadow-sm)] hover:brightness-110",
+
     success:
-      'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-sm focus-visible:ring-emerald-500 dark:bg-emerald-600 dark:hover:bg-emerald-500',
+      "bg-[var(--color-success)] text-[var(--color-bg)] shadow-[var(--shadow-sm)] hover:brightness-105",
+
     subtle:
-      'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/50 dark:text-indigo-300 focus-visible:ring-indigo-400',
+      "bg-[var(--color-brand-soft)] text-[var(--color-brand)] hover:brightness-95",
+
+    glass:
+      "border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-raised)] shadow-[var(--shadow-sm)]",
   };
 
   const sizes = {
-    xs: 'px-2.5 py-1 text-xs rounded-lg gap-1.5',
-    sm: 'px-3 py-1.5 text-xs rounded-xl gap-1.5 font-semibold',
-    md: 'px-4 py-2 text-sm rounded-xl gap-2 font-semibold',
-    lg: 'px-5 py-2.5 text-base rounded-2xl gap-2.5 font-bold',
+    xs: "px-3 py-1.5 text-xs gap-1 rounded-lg",
+    sm: "px-4 py-2 text-sm gap-2 rounded-xl",
+    md: "px-5 py-2.5 text-sm gap-2 rounded-xl",
+    lg: "px-6 py-3 text-base gap-2.5 rounded-2xl",
+    xl: "px-8 py-4 text-lg gap-3 rounded-2xl",
+  };
+
+  const radius = {
+    md: "rounded-lg",
+    lg: "rounded-xl",
+    xl: "rounded-2xl",
+    full: "rounded-full",
   };
 
   const iconSizes = {
-    xs: 'w-3.5 h-3.5',
-    sm: 'w-4 h-4',
-    md: 'w-4 h-4',
-    lg: 'w-5 h-5',
+    xs: 14,
+    sm: 16,
+    md: 18,
+    lg: 20,
+    xl: 22,
   };
 
   return (
     <motion.button
-      whileHover={disabled || isLoading ? {} : { scale: 1.01 }}
-      whileTap={disabled || isLoading ? {} : { scale: 0.98 }}
+      whileHover={
+        disabled || isLoading
+          ? {}
+          : {
+              y: -2,
+              scale: 1.02,
+            }
+      }
+      whileTap={
+        disabled || isLoading
+          ? {}
+          : {
+              scale: 0.97,
+            }
+      }
+      transition={{
+        duration: 0.18,
+      }}
       type={type}
       disabled={disabled || isLoading}
       onClick={onClick}
-      className={`${baseStyles} ${variants[variant] || variants.primary} ${sizes[size]} ${className}`}
+      className={`
+        ${base}
+        ${variants[variant] || variants.primary}
+        ${sizes[size]}
+        ${radius[rounded]}
+        ${fullWidth ? "w-full" : ""}
+        ${className}
+      `}
       {...props}
     >
+      {/* Glow */}
+
+      {variant === "primary" && (
+        <span
+          className="
+            absolute
+            inset-0
+            opacity-0
+            hover:opacity-100
+            transition-opacity
+            duration-300
+            bg-gradient-to-r
+            from-white/10
+            via-white/20
+            to-white/10
+          "
+        />
+      )}
+
+      {/* Loading */}
+
       {isLoading ? (
-        <svg
-          className={`animate-spin ${iconSizes[size]} shrink-0 text-current`}
-          fill="none"
-          viewBox="0 0 24 24"
-        >
+        <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
           <circle
-            className="opacity-25"
             cx="12"
             cy="12"
             r="10"
             stroke="currentColor"
-            strokeWidth="4"
+            strokeWidth="3"
+            opacity=".2"
           />
+
           <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            d="M22 12a10 10 0 00-10-10"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
           />
         </svg>
-      ) : Icon && iconPosition === 'left' ? (
-        <Icon className={`${iconSizes[size]} shrink-0`} />
-      ) : null}
+      ) : (
+        <>
+          {Icon && iconPosition === "left" && (
+            <Icon size={iconSizes[size]} className="relative z-10 shrink-0" />
+          )}
 
-      <span>{children}</span>
+          <span className="relative z-10">{children}</span>
 
-      {!isLoading && Icon && iconPosition === 'right' ? (
-        <Icon className={`${iconSizes[size]} shrink-0`} />
-      ) : null}
+          {Icon && iconPosition === "right" && (
+            <Icon size={iconSizes[size]} className="relative z-10 shrink-0" />
+          )}
+        </>
+      )}
     </motion.button>
   );
 };

@@ -1,72 +1,126 @@
-import React from 'react';
-import { UrlCard } from './UrlCard';
-import { Skeleton } from '../ui/Skeleton';
-import { Link2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link2, Sparkles } from "lucide-react";
+
+import { UrlCard } from "./UrlCard";
+import { Skeleton } from "../ui/Skeleton";
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.06,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: {
+    opacity: 0,
+    y: 12,
+    scale: 0.98,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.28,
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.96,
+    transition: {
+      duration: 0.18,
+    },
+  },
+};
 
 export const UrlList = ({
-  urls,
-  loading,
-  viewMode = 'list',
+  urls = [],
+  loading = false,
+  viewMode = "list",
   onDelete,
   onToggleStatus,
   onToggleFavorite,
 }) => {
+  const layoutClasses =
+    viewMode === "grid"
+      ? "grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5"
+      : "space-y-5";
+
   if (loading) {
     return (
-      <div
-        className={
-          viewMode === 'grid'
-            ? 'grid grid-cols-1 md:grid-cols-2 gap-4'
-            : 'space-y-4'
-        }
-      >
-        {[1, 2, 3, 4].map((n) => (
+      <div className={layoutClasses}>
+        {Array.from({ length: 6 }).map((_, index) => (
           <div
-            key={n}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl space-y-3"
+            key={index}
+            className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4"
           >
-            <Skeleton className="h-5 w-1/3" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-3 w-1/4" />
+            <div className="flex justify-between items-center">
+              <Skeleton className="h-5 w-40" />
+              <Skeleton circle className="h-10 w-10" />
+            </div>
+
+            <Skeleton className="h-4 w-56" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+
+            <div className="flex justify-between pt-4">
+              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-8 w-32" />
+            </div>
           </div>
         ))}
       </div>
     );
   }
 
-  if (!urls || urls.length === 0) {
+  if (!urls.length) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
-        <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-4">
-          <Link2 className="w-6 h-6 stroke-[2.5]" />
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-8 py-16 text-center shadow-sm"
+      >
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
+          <Link2 className="h-7 w-7" />
         </div>
-        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
-          No short URLs found
-        </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-          Create your first short link or adjust your search filters above!
+
+        <h2 className="mt-6 text-xl font-bold text-slate-900 dark:text-white">
+          No URLs Found
+        </h2>
+
+        <p className="mt-2 max-w-md mx-auto text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+          You haven't created any short links yet, or your current filters
+          returned no results.
         </p>
-      </div>
+
+        <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-indigo-50 dark:bg-indigo-950/40 px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400">
+          <Sparkles className="w-4 h-4" />
+          Create your first short URL
+        </div>
+      </motion.div>
     );
   }
 
   return (
-    <div
-      className={
-        viewMode === 'grid'
-          ? 'grid grid-cols-1 md:grid-cols-2 gap-4'
-          : 'space-y-4'
-      }
+    <motion.div
+      layout
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className={layoutClasses}
     >
-      <AnimatePresence>
+      <AnimatePresence mode="popLayout">
         {urls.map((urlRecord) => (
           <motion.div
             key={urlRecord.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            layout
+            variants={itemVariants}
+            exit="exit"
           >
             <UrlCard
               urlRecord={urlRecord}
@@ -77,6 +131,6 @@ export const UrlList = ({
           </motion.div>
         ))}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };

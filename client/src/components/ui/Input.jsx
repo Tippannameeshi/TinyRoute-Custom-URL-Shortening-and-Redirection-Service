@@ -1,96 +1,114 @@
-import React, { forwardRef, useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import React, { forwardRef, useId, useState } from "react";
+import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
-export const Input = forwardRef(({
-  label,
-  error,
-  success,
-  helperText,
-  icon: Icon = null,
-  rightIcon: RightIcon = null,
-  onRightIconClick,
-  className = '',
-  id,
-  type = 'text',
-  isPassword = false,
-  ...props
-}, ref) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+export const Input = forwardRef(
+  (
+    {
+      label,
+      error,
+      success,
+      helperText,
+      icon: Icon = null,
+      rightIcon: RightIcon = null,
+      onRightIconClick,
+      className = "",
+      id,
+      type = "text",
+      isPassword = false,
+      disabled = false,
+      readOnly = false,
+      ...props
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const inputId = id || generatedId;
+    const helperId = `${inputId}-helper`;
+    const passwordField = isPassword || type === "password";
+    const [showPassword, setShowPassword] = useState(false);
+    const inputType =
+      passwordField && !showPassword
+        ? "password"
+        : passwordField
+          ? "text"
+          : type;
 
-  const isPasswordType = type === 'password' || isPassword;
-  const computedType = isPasswordType ? (showPassword ? 'text' : 'password') : type;
-
-  return (
-    <div className="w-full space-y-1.5">
-      {label && (
-        <label
-          htmlFor={inputId}
-          className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300"
-        >
-          {label}
-        </label>
-      )}
-      <div className="relative rounded-xl shadow-xs">
-        {Icon && (
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
-            <Icon className="w-4 h-4 shrink-0" />
-          </div>
+    return (
+      <div className="w-full space-y-2">
+        {label && (
+          <label
+            htmlFor={inputId}
+            className="block text-xs font-semibold tracking-wide text-[var(--color-text-muted)]"
+          >
+            {label}
+          </label>
         )}
-        <input
-          ref={ref}
-          id={inputId}
-          type={computedType}
-          className={`w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-900 border text-slate-900 dark:text-white rounded-xl placeholder-slate-400 dark:placeholder-slate-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 ${
-            Icon ? 'pl-10' : ''
-          } ${
-            isPasswordType || RightIcon ? 'pr-10' : ''
-          } ${
-            error
-              ? 'border-rose-500 dark:border-rose-500 focus:border-rose-500 focus:ring-rose-500/20'
-              : success
-              ? 'border-emerald-500 dark:border-emerald-500 focus:border-emerald-500 focus:ring-emerald-500/20'
-              : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
-          } ${className}`}
-          {...props}
-        />
-        {isPasswordType ? (
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            tabIndex={-1}
-            className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
-            title={showPassword ? 'Hide password' : 'Show password'}
+        <div className="relative">
+          {Icon && (
+            <Icon
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-subtle)]"
+            />
+          )}
+          <input
+            ref={ref}
+            id={inputId}
+            type={inputType}
+            disabled={disabled}
+            readOnly={readOnly}
+            aria-invalid={Boolean(error)}
+            aria-describedby={
+              error || success || helperText ? helperId : undefined
+            }
+            className={`w-full rounded-lg border bg-[var(--color-bg)] px-4 py-2.5 text-sm text-[var(--color-text)] shadow-[var(--shadow-sm)] outline-none transition placeholder:text-[var(--color-text-subtle)] focus:border-[var(--color-brand)] focus:shadow-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-60 read-only:bg-[var(--color-surface-soft)] ${Icon ? "pl-11" : ""} ${passwordField || RightIcon ? "pr-11" : ""} ${error ? "border-[var(--color-danger)]" : success ? "border-[var(--color-success)]" : "border-[var(--color-border)] hover:border-[var(--color-border-strong)]"} ${className}`}
+            {...props}
+          />
+          {passwordField ? (
+            <button
+              type="button"
+              onClick={() => setShowPassword((value) => !value)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-subtle)] transition hover:text-[var(--color-text)]"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          ) : RightIcon ? (
+            <button
+              type="button"
+              onClick={onRightIconClick}
+              disabled={!onRightIconClick}
+              aria-label="Input action"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-subtle)] transition hover:text-[var(--color-text)]"
+            >
+              <RightIcon size={16} />
+            </button>
+          ) : null}
+        </div>
+        {error && (
+          <p
+            id={helperId}
+            className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-danger)]"
           >
-            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-        ) : RightIcon ? (
-          <button
-            type="button"
-            onClick={onRightIconClick}
-            disabled={!onRightIconClick}
-            tabIndex={onRightIconClick ? 0 : -1}
-            className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
+            <AlertCircle size={14} />
+            {error}
+          </p>
+        )}
+        {!error && success && (
+          <p
+            id={helperId}
+            className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-success)]"
           >
-            <RightIcon className="w-4 h-4" />
-          </button>
-        ) : null}
+            <CheckCircle2 size={14} />
+            {success}
+          </p>
+        )}
+        {!error && !success && helperText && (
+          <p id={helperId} className="text-xs text-[var(--color-text-subtle)]">
+            {helperText}
+          </p>
+        )}
       </div>
-      {error && (
-        <p className="text-xs text-rose-500 dark:text-rose-400 font-medium flex items-center gap-1">
-          <span>{error}</span>
-        </p>
-      )}
-      {!error && success && (
-        <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-          <span>{success}</span>
-        </p>
-      )}
-      {!error && !success && helperText && (
-        <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
-      )}
-    </div>
-  );
-});
-
-Input.displayName = 'Input';
+    );
+  },
+);
+Input.displayName = "Input";

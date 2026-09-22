@@ -28,13 +28,10 @@ export const LoginForm = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
+      await login(email.trim(), password);
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Login failed. Please check your credentials."
-      );
+      setError(err.response?.data?.message || "Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }

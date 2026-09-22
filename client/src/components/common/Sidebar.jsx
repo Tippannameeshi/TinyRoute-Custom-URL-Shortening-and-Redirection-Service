@@ -1,165 +1,107 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import { ROUTES } from '../../constants/routes';
+import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
-  LayoutDashboard,
-  Link as LinkIcon,
-  PlusCircle,
-  Settings,
-  ShieldCheck,
-  Users,
-  Globe,
   ChevronLeft,
   ChevronRight,
-  HelpCircle,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
+  CircleHelp,
+  Gauge,
+  Link2,
+  Plus,
+  Settings,
+  Shield,
+  Users,
+  Globe,
+} from "lucide-react";
+
+import { ROUTES } from "../../constants/routes";
+
+const userLinks = [
+  { name: "Overview", path: ROUTES.DASHBOARD, icon: Gauge },
+  { name: "Links", path: ROUTES.URL_LIST, icon: Link2 },
+  { name: "Create link", path: ROUTES.URL_CREATE, icon: Plus },
+  { name: "Settings", path: ROUTES.SETTINGS, icon: Settings },
+];
+
+const adminLinks = [
+  { name: "Overview", path: ROUTES.ADMIN_DASHBOARD, icon: Shield },
+  { name: "Users", path: ROUTES.ADMIN_USERS, icon: Users },
+  { name: "All links", path: ROUTES.ADMIN_URLS, icon: Globe },
+];
 
 export const Sidebar = ({ isAdminMode = false }) => {
-  const [collapsed, setCollapsed] = useState(() => {
-    return localStorage.getItem('sidebar-collapsed') === 'true';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('sidebar-collapsed', collapsed);
-  }, [collapsed]);
-
-  const userLinks = [
-    {
-      name: 'Dashboard',
-      path: ROUTES.DASHBOARD,
-      icon: LayoutDashboard,
-    },
-    {
-      name: 'URL Management',
-      path: ROUTES.URL_LIST,
-      icon: LinkIcon,
-    },
-    {
-      name: 'Create Short URL',
-      path: ROUTES.URL_CREATE,
-      icon: PlusCircle,
-    },
-    {
-      name: 'Settings & Profile',
-      path: ROUTES.SETTINGS,
-      icon: Settings,
-    },
-  ];
-
-  const adminLinks = [
-    {
-      name: 'Admin Dashboard',
-      path: ROUTES.ADMIN_DASHBOARD,
-      icon: ShieldCheck,
-    },
-    {
-      name: 'User Management',
-      path: ROUTES.ADMIN_USERS,
-      icon: Users,
-    },
-    {
-      name: 'Global URLs',
-      path: ROUTES.ADMIN_URLS,
-      icon: Globe,
-    },
-  ];
-
+  const [collapsed, setCollapsed] = useState(
+    () => localStorage.getItem("sidebar-collapsed") === "true",
+  );
+  useEffect(
+    () => localStorage.setItem("sidebar-collapsed", String(collapsed)),
+    [collapsed],
+  );
   const links = isAdminMode ? adminLinks : userLinks;
 
   return (
     <motion.aside
-      animate={{
-        width: collapsed ? 76 : 256,
-      }}
-      transition={{
-        duration: 0.2,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-      className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/80 dark:border-slate-800/80 min-h-[calc(100vh-4rem)] flex flex-col relative shrink-0 shadow-xs z-20"
+      animate={{ width: collapsed ? 72 : 232 }}
+      transition={{ duration: 0.2 }}
+      className="relative flex min-h-[calc(100vh-4.25rem)] shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-2 py-4"
     >
-      {/* Collapse Toggle */}
       <button
-        type="button"
-        onClick={() => setCollapsed(!collapsed)}
-        aria-label="Toggle Sidebar"
-        aria-expanded={!collapsed}
-        className="absolute -right-3.5 top-6 w-7 h-7 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm hover:border-indigo-500 dark:hover:border-indigo-500 hover:scale-110 transition-all z-30 flex items-center justify-center text-slate-500 dark:text-slate-400"
+        onClick={() => setCollapsed((value) => !value)}
+        className="absolute -right-3.5 top-5 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-muted)] shadow-[var(--shadow-sm)] transition hover:border-[var(--color-brand)] hover:text-[var(--color-brand)]"
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
-        {collapsed ? (
-          <ChevronRight size={15} />
-        ) : (
-          <ChevronLeft size={15} />
-        )}
+        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
       </button>
-
-      {/* Header Badge */}
-      <div className="px-4 pt-6 pb-3">
-        {!collapsed ? (
-          <div>
-            <p className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500 font-bold">
-              {isAdminMode ? 'Enterprise System' : 'Workspace'}
-            </p>
-            {isAdminMode && (
-              <span className="inline-flex items-center mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300/40">
-                ADMIN CONSOLE
-              </span>
-            )}
-          </div>
-        ) : (
-          <div className="h-4" />
+      <div
+        className={`mb-5 border-b border-[var(--color-border)] px-2 pb-4 ${collapsed ? "text-center" : ""}`}
+      >
+        <p className="eyebrow">
+          {collapsed ? "TR" : isAdminMode ? "Admin console" : "Workspace"}
+        </p>
+        {!collapsed && (
+          <p className="mt-1 text-xs text-[var(--color-text-subtle)]">
+            {isAdminMode ? "System operations" : "Personal workspace"}
+          </p>
         )}
       </div>
-
-      {/* Navigation Links */}
-      <nav className="flex-1 px-3 space-y-1.5">
-        {links.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end
-              title={collapsed ? item.name : ''}
-              className={({ isActive }) =>
-                `group relative flex items-center rounded-xl px-3 py-2.5 transition-all duration-200 ${
-                  isActive
-                    ? 'bg-indigo-600 text-white shadow-sm font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white font-medium'
-                } ${collapsed ? 'justify-center' : ''}`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : ''}`} />
-                  {!collapsed && (
-                    <span className="ml-3 text-sm truncate">
-                      {item.name}
-                    </span>
-                  )}
-                </>
-              )}
-            </NavLink>
-          );
-        })}
+      <nav
+        aria-label={isAdminMode ? "Admin navigation" : "Workspace navigation"}
+        className="space-y-1"
+      >
+        {links.map(({ name, path, icon: Icon }) => (
+          <NavLink
+            key={path}
+            end
+            to={path}
+            title={collapsed ? name : undefined}
+            className={({ isActive }) =>
+              `group relative flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm font-semibold transition ${collapsed ? "justify-center" : ""} ${isActive ? "bg-[var(--color-brand-soft)] text-[var(--color-brand)]" : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-raised)] hover:text-[var(--color-text)]"}`
+            }
+          >
+            <Icon size={17} strokeWidth={1.8} />
+            <span className={collapsed ? "sr-only" : ""}>{name}</span>
+          </NavLink>
+        ))}
       </nav>
-
-      {/* Footer / Meta */}
-      <div className="border-t border-slate-100 dark:border-slate-800/80 p-3 space-y-1">
+      <div className="mt-auto border-t border-[var(--color-border)] pt-3">
         <a
-          href="https://github.com"
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center rounded-xl px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all text-xs"
+          href="#"
+          className={`flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-xs font-semibold text-[var(--color-text-subtle)] transition hover:bg-[var(--color-surface-raised)] hover:text-[var(--color-text)] ${collapsed ? "justify-center" : ""}`}
         >
-          <HelpCircle className="w-4 h-4 shrink-0" />
-          {!collapsed && <span className="ml-3 font-medium">Docs & API</span>}
+          <CircleHelp size={17} />
+          <span className={collapsed ? "sr-only" : ""}>Documentation</span>
         </a>
-
         {!collapsed && (
-          <div className="pt-2 text-center text-[10px] text-slate-400 dark:text-slate-600 font-medium">
-            TinyRoute SaaS v1.0.0
+          <div className="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-soft)] p-3">
+            <p className="text-xs font-bold text-[var(--color-text)]">
+              TinyRoute
+            </p>
+            <p className="mt-1 text-[11px] text-[var(--color-text-subtle)]">
+              Link intelligence, simply.
+            </p>
+            <span className="mt-3 inline-flex rounded bg-[var(--color-brand-soft)] px-2 py-1 font-mono text-[10px] font-bold text-[var(--color-brand)]">
+              v1.0.0
+            </span>
           </div>
         )}
       </div>

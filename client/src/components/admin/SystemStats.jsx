@@ -32,14 +32,14 @@ export const SystemStats = ({ stats = {} }) => {
 
   return (
     <section className="relative mb-10">
-      {/* Decorative Background */}
-      <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-r from-indigo-50 via-white to-cyan-50 blur-3xl opacity-60"></div>
+      {/* Background Glow */}
+      <div className="pointer-events-none absolute inset-0 -z-10 rounded-3xl bg-gradient-to-r from-indigo-50 via-white to-cyan-50 opacity-60 blur-3xl dark:from-indigo-950/30 dark:via-slate-950 dark:to-cyan-950/30" />
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {statCards.map((card) => (
           <div
             key={card.title}
-            className="transform transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
+            className="transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
           >
             <StatCard
               title={card.title}

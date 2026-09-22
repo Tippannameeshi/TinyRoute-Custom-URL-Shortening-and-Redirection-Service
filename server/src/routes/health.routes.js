@@ -13,11 +13,17 @@ router.get("/", async (req, res) => {
     dbStatus = "unhealthy";
   }
 
-  return ApiResponse.success(res, HTTP_STATUS.OK, "TinyRoute Health Check", {
-    status: "UP",
-    timestamp: new Date(),
-    database: dbStatus,
-    environment: process.env.NODE_ENV || "development"
+  const statusCode =
+    dbStatus === "healthy" ? HTTP_STATUS.OK : HTTP_STATUS.SERVICE_UNAVAILABLE;
+  return res.status(statusCode).json({
+    success: dbStatus === "healthy",
+    message: "TinyRoute Health Check",
+    data: {
+      status: dbStatus === "healthy" ? "UP" : "DEGRADED",
+      timestamp: new Date(),
+      database: dbStatus,
+      environment: process.env.NODE_ENV || "development",
+    },
   });
 });
 

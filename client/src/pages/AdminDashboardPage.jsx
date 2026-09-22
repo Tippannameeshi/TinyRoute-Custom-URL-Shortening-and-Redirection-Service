@@ -1,34 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import {
+  ShieldAlert,
+  RefreshCw,
+  FileText,
+} from 'lucide-react';
+
 import { useAdmin } from '../hooks/useAdmin';
+
 import { SystemStats } from '../components/admin/SystemStats';
-import { Skeleton } from '../components/ui/Skeleton';
 import { AnalyticsOverview } from '../components/analytics/AnalyticsOverview';
+
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
+import { Skeleton } from '../components/ui/Skeleton';
 import { Table } from '../components/ui/Table';
+import { Button } from '../components/ui/Button';
+
 import { formatDate } from '../utils/formatters';
-import { ShieldAlert, Activity, FileText } from 'lucide-react';
 
 export const AdminDashboardPage = () => {
   const { fetchStats, fetchAuditLogs } = useAdmin();
+
   const [statsData, setStatsData] = useState(null);
   const [auditLogs, setAuditLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
+
+  const loadDashboard = useCallback(async (showRefresh = false) => {
+    try {
+      setError(null);
+
+      if (showRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
+      const [statsRes, logsRes] = await Promise.all([
+        fetchStats(),
+        fetchAuditLogs({ limit: 15 }),
+      ]);
+
+      setStatsData(statsRes);
+      setAuditLogs(logsRes?.logs || []);
+    } catch (err) {
+      console.error(err);
+      setError('Unable to load administrator dashboard.');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [fetchStats, fetchAuditLogs]);
 
   useEffect(() => {
-    Promise.all([fetchStats(), fetchAuditLogs({ limit: 15 })])
-      .then(([statsRes, logsRes]) => {
-        setStatsData(statsRes);
-        setAuditLogs(logsRes.logs);
-      })
-      .finally(() => setLoading(false));
-  }, [fetchStats, fetchAuditLogs]);
+    loadDashboard();
+  }, [loadDashboard]);
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-72 w-full" />
+        <Skeleton className="h-96 w-full" />
       </div>
     );
   }
@@ -40,54 +75,127 @@ export const AdminDashboardPage = () => {
     {
       header: 'Timestamp',
       key: 'created_at',
-      render: (val) => <span className="text-[11px]">{formatDate(val)}</span>
+      render: (value) => (
+        <span className="text-xs">
+          {formatDate(value)}
+        </span>
+      ),
     },
     {
       header: 'Action',
       key: 'action',
-      render: (val) => <Badge variant="info">{val}</Badge>
+      render: (value) => (
+        <Badge variant="admin">
+          {value}
+        </Badge>
+      ),
     },
     {
-      header: 'User Email',
+      header: 'User',
       key: 'email',
-      render: (val) => <span className="font-semibold text-slate-900 dark:text-white">{val || 'System / Guest'}</span>
+      render: (value) => (
+        <span className="font-semibold text-slate-900 dark:text-white">
+          {value || 'System'}
+        </span>
+      ),
     },
     {
       header: 'IP Address',
       key: 'ip_address',
-      render: (val) => <span className="font-mono text-xs">{val || '127.0.0.1'}</span>
+      render: (value) => (
+        <span className="font-mono text-xs">
+          {value || '-'}
+        </span>
+      ),
     },
     {
       header: 'Details',
       key: 'details',
-      render: (val) => <span className="truncate max-w-xs">{val}</span>
-    }
+      render: (value) => (
+        <div className="max-w-sm truncate">
+          {value || '-'}
+        </div>
+      ),
+    },
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <motion.div
+      className="space-y-8"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+    >
+      {/* Header */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Enterprise Admin Control</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Global system monitoring, user administration & security audit logs</p>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+            Enterprise Admin Dashboard
+          </h1>
+
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            Monitor platform health, users, analytics and security events.
+          </p>
         </div>
-        <Badge variant="admin" className="px-3 py-1 text-xs font-bold">
-          <ShieldAlert className="w-3.5 h-3.5 mr-1" /> System Administrator
-        </Badge>
+
+        <div className="flex items-center gap-3">
+          <Badge variant="admin" size="lg">
+            <ShieldAlert className="mr-1 h-4 w-4" />
+            Administrator
+          </Badge>
+
+          <Button
+            variant="outline"
+            size="sm"
+            icon={RefreshCw}
+            isLoading={refreshing}
+            onClick={() => loadDashboard(true)}
+          >
+            Refresh
+          </Button>
+        </div>
       </div>
 
+      {/* Error */}
+      {error && (
+        <Card className="border-rose-200 bg-rose-50 dark:border-rose-900 dark:bg-rose-950/30">
+          <p className="text-sm text-rose-600 dark:text-rose-400">
+            {error}
+          </p>
+        </Card>
+      )}
+
+      {/* Statistics */}
       <SystemStats stats={stats} />
 
+      {/* Analytics */}
       <AnalyticsOverview charts={charts} />
 
-      {/* Security Audit Logs Section */}
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
-          <FileText className="w-4 h-4 text-indigo-500" />
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">Security & Action Audit Logs</h3>
-        </div>
-        <Table columns={auditColumns} data={auditLogs} emptyMessage="No audit logs recorded yet" />
-      </div>
-    </div>
+      {/* Audit Logs */}
+      <Card>
+        <Card.Header className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-indigo-500" />
+
+            <Card.Title>
+              Security Audit Logs
+            </Card.Title>
+          </div>
+
+          <Badge variant="info">
+            {auditLogs.length} Records
+          </Badge>
+        </Card.Header>
+
+        <Card.Content>
+          <Table
+            columns={auditColumns}
+            data={auditLogs}
+            emptyMessage="No audit logs available."
+            zebra
+          />
+        </Card.Content>
+      </Card>
+    </motion.div>
   );
 };

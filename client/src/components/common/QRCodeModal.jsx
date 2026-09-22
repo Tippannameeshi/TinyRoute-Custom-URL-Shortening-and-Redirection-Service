@@ -1,55 +1,73 @@
-import React, { useState, useEffect } from 'react';
-import { Modal } from './Modal';
-import { urlApi } from '../../api/urlApi';
-import { LoadingSpinner } from './LoadingSpinner';
-import { API_BASE_URL } from '../../constants/config';
-import { getStoredToken } from '../../utils/storage';
-import { Button } from '../ui/Button';
+import React, { useState, useEffect, useRef } from "react";
+import { Modal } from "./Modal";
+import { urlApi } from "../../api/urlApi";
+import { LoadingSpinner } from "./LoadingSpinner";
+import { API_BASE_URL } from "../../constants/config";
+import { getStoredToken } from "../../utils/storage";
+import { Button } from "../ui/Button";
+
 import {
   Download,
   QrCode,
   Copy,
-  Check
-} from 'lucide-react';
+  Check,
+  Link2,
+  Sparkles,
+} from "lucide-react";
 
-export const QRCodeModal = ({ isOpen, onClose, urlRecord }) => {
-  const [qrDataUrl, setQrDataUrl] = useState('');
-  const [shortUrl, setShortUrl] = useState('');
+export const QRCodeModal = ({
+  isOpen,
+  onClose,
+  urlRecord,
+}) => {
+  const [qrDataUrl, setQrDataUrl] = useState("");
+  const [shortUrl, setShortUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+
+  const copyTimer = useRef(null);
 
   useEffect(() => {
     if (!isOpen || !urlRecord) return;
 
     let mounted = true;
 
-    const loadQr = async () => {
+    const loadQrCode = async () => {
       setLoading(true);
-      setError('');
+      setError("");
 
       try {
-        const res = await urlApi.getQrCode(urlRecord.id);
+        const response = await urlApi.getQrCode(urlRecord.id);
 
         if (!mounted) return;
 
-        setQrDataUrl(res.data.data.dataUrl);
-        setShortUrl(res.data.data.shortUrl);
-      } catch {
+        setQrDataUrl(response.data.data.dataUrl);
+        setShortUrl(response.data.data.shortUrl);
+      } catch (err) {
+        console.error(err);
+
         if (mounted) {
-          setError('Failed to load QR Code.');
+          setError("Failed to load QR Code.");
         }
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
-    loadQr();
+    loadQrCode();
 
     return () => {
       mounted = false;
-      setQrDataUrl('');
-      setShortUrl('');
+
+      setQrDataUrl("");
+      setShortUrl("");
+
+      if (copyTimer.current) {
+        clearTimeout(copyTimer.current);
+      }
     };
   }, [isOpen, urlRecord]);
 
@@ -59,10 +77,17 @@ export const QRCodeModal = ({ isOpen, onClose, urlRecord }) => {
 
       setCopySuccess(true);
 
-      setTimeout(() => {
+      if (copyTimer.current) {
+        clearTimeout(copyTimer.current);
+      }
+
+      copyTimer.current = setTimeout(() => {
         setCopySuccess(false);
-      }, 2000);
-    } catch {}
+      }, 1800);
+    } catch (err) {
+      console.error(err);
+      setError("Unable to copy URL.");
+    }
   };
 
   const downloadSvg = async () => {
@@ -73,30 +98,40 @@ export const QRCodeModal = ({ isOpen, onClose, urlRecord }) => {
         `${API_BASE_URL}/urls/${urlRecord.id}/qr?format=svg`,
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
+      if (!response.ok) {
+        throw new Error("Failed");
+      }
+
       const blob = await response.blob();
 
-      const objectUrl = window.URL.createObjectURL(blob);
+      const objectUrl = URL.createObjectURL(blob);
 
-      const a = document.createElement('a');
+      const a = document.createElement("a");
+
       a.href = objectUrl;
       a.download = `qr_${urlRecord.short_code}.svg`;
       a.click();
 
-      window.URL.revokeObjectURL(objectUrl);
-    } catch {
-      alert('Unable to download SVG.');
+      URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      console.error(err);
+      setError("Unable to download SVG.");
     }
   };
 
   const downloadPng = () => {
-    const a = document.createElement('a');
+    if (!qrDataUrl) return;
+
+    const a = document.createElement("a");
+
     a.href = qrDataUrl;
     a.download = `qr_${urlRecord.short_code}.png`;
+
     a.click();
   };
 
@@ -105,36 +140,79 @@ export const QRCodeModal = ({ isOpen, onClose, urlRecord }) => {
       isOpen={isOpen}
       onClose={onClose}
       title="QR Code"
+      subtitle="Download or share your shortened link"
+      maxWidth="max-w-lg"
     >
-      <div className="flex flex-col items-center space-y-5">
+      <div className="space-y-6">
 
         {loading ? (
           <LoadingSpinner size="large" />
         ) : error ? (
-          <div className="text-red-500 text-sm">
-            {error}
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-900 dark:bg-red-950/20">
+
+            <p className="text-sm font-semibold text-red-600 dark:text-red-400">
+              {error}
+            </p>
+
           </div>
         ) : (
           <>
-            <div className="bg-white rounded-2xl p-4 shadow border">
-              <img
-                src={qrDataUrl}
-                alt="QR Code"
-                className="w-56 h-56"
-              />
+            {/* QR Card */}
+
+            <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-indigo-50 p-6 shadow-xl dark:border-slate-800 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
+
+              <div className="flex justify-center">
+
+                <div className="rounded-2xl bg-white p-5 shadow-lg">
+
+                  {qrDataUrl ? (
+                    <img
+                      src={qrDataUrl}
+                      alt="QR Code"
+                      className="h-60 w-60"
+                    />
+                  ) : (
+                    <div className="flex h-60 w-60 items-center justify-center text-center text-xs text-slate-500">
+                      QR code unavailable
+                    </div>
+                  )}
+
+                </div>
+
+              </div>
+
             </div>
 
-            <div className="w-full">
-              <p className="font-mono text-xs bg-slate-100 dark:bg-slate-800 p-3 rounded-lg break-all">
-                {shortUrl}
-              </p>
+            {/* URL */}
+
+            <div>
+
+              <label className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+
+                <Link2 size={14} />
+
+                Short URL
+
+              </label>
+
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
+
+                <p className="break-all font-mono text-sm text-slate-700 dark:text-slate-200">
+                  {shortUrl}
+                </p>
+
+              </div>
+
             </div>
 
-            <div className="grid grid-cols-3 gap-3 w-full">
+            {/* Buttons */}
+
+            <div className="grid gap-3 sm:grid-cols-3">
 
               <Button
                 onClick={downloadPng}
                 icon={Download}
+                className="justify-center"
               >
                 PNG
               </Button>
@@ -143,21 +221,34 @@ export const QRCodeModal = ({ isOpen, onClose, urlRecord }) => {
                 variant="outline"
                 onClick={downloadSvg}
                 icon={QrCode}
+                className="justify-center"
               >
                 SVG
               </Button>
 
               <Button
-                variant="secondary"
+                variant={copySuccess ? "success" : "secondary"}
                 onClick={copyLink}
                 icon={copySuccess ? Check : Copy}
+                className="justify-center"
               >
-                {copySuccess ? 'Copied' : 'Copy'}
+                {copySuccess ? "Copied!" : "Copy"}
               </Button>
+
+            </div>
+
+            {/* Footer */}
+
+            <div className="flex items-center justify-center gap-2 rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-center text-xs text-indigo-700 dark:border-indigo-900 dark:bg-indigo-950/20 dark:text-indigo-300">
+
+              <Sparkles size={14} />
+
+              Scan this QR code from any device to instantly open your shortened URL.
 
             </div>
           </>
         )}
+
       </div>
     </Modal>
   );

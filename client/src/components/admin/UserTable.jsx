@@ -16,20 +16,14 @@ export const UserTable = ({
 
           <thead className="sticky top-0 z-10 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 dark:border-slate-700 dark:from-slate-900 dark:to-slate-800">
 
-            <tr className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
 
               <th className="px-6 py-4">ID</th>
-
               <th className="px-6 py-4">User</th>
-
               <th className="px-6 py-4">Email</th>
-
               <th className="px-6 py-4">Role</th>
-
               <th className="px-6 py-4">Status</th>
-
               <th className="px-6 py-4">Joined Date</th>
-
               <th className="px-6 py-4 text-right">Actions</th>
 
             </tr>
@@ -41,7 +35,7 @@ export const UserTable = ({
             {users.map((u) => (
               <tr
                 key={u.id}
-                className="group transition-all duration-300 hover:bg-indigo-50/60 dark:hover:bg-slate-800/60"
+                className="group transition-colors duration-300 hover:bg-indigo-50/60 dark:hover:bg-slate-800/60"
               >
 
                 <td className="px-6 py-5">
@@ -63,7 +57,7 @@ export const UserTable = ({
                         {u.first_name} {u.last_name}
                       </h3>
 
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         User ID #{u.id}
                       </p>
                     </div>
@@ -104,7 +98,7 @@ export const UserTable = ({
 
                 </td>
 
-                <td className="px-6 py-5 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                <td className="whitespace-nowrap px-6 py-5 text-sm text-slate-500 dark:text-slate-400">
                   {formatDate(u.created_at)}
                 </td>
 

@@ -11,21 +11,23 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: env.db.connectionLimit || 10,
   queueLimit: 0,
-  enableKeepAlive: true
+  enableKeepAlive: true,
 });
 
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
-    logger.info(`MySQL Connected Successfully to ${env.db.database} at ${env.db.host}:${env.db.port}`);
+    logger.info(
+      `MySQL Connected Successfully to ${env.db.database} at ${env.db.host}:${env.db.port}`,
+    );
     connection.release();
   } catch (error) {
     logger.error(`MySQL Connection Failed: ${error.message}`);
-    console.warn("⚠️ Database connection failed. Please ensure MySQL is running on port 3306 with credentials matching server/.env");
+    throw error;
   }
 }
 
 module.exports = {
   pool,
-  testConnection
+  testConnection,
 };

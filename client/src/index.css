@@ -1,146 +1,63 @@
 @import "./styles/design-system.css";
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
-  :root {
-    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-  
-  * {
-    box-sizing: border-box;
-  }
-
   html {
+    min-width: 320px;
     scroll-behavior: smooth;
-    -webkit-tap-highlight-color: transparent;
   }
-
   body {
-    font-family: var(--font-sans);
     margin: 0;
-    padding: 0;
-    background-color: #f8fafc;
-    color: #0f172a;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    min-width: 320px;
     overflow-x: hidden;
   }
-
-  .dark body {
-    background-color: #090d16;
-    color: #f8fafc;
-  }
-
   #root {
-    width: 100%;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
   }
 }
 
-/* Glassmorphism Classes */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  background: color-mix(in srgb, var(--color-surface) 86%, transparent);
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
-
-.dark .glass-panel {
-  background: rgba(15, 23, 42, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(30, 41, 59, 0.8);
-}
-
 .glass-nav {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+  border-color: color-mix(in srgb, var(--color-border) 85%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
-
-.dark .glass-nav {
-  background: rgba(9, 13, 22, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-/* Auth Ambient Background Mesh Gradient */
-.auth-bg-gradient {
-  background: radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-              radial-gradient(circle at 90% 90%, rgba(14, 165, 233, 0.12) 0%, transparent 40%),
-              #090d16;
-}
-
-.auth-light-gradient {
-  background: radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
-              radial-gradient(circle at 90% 90%, rgba(14, 165, 233, 0.06) 0%, transparent 40%),
-              #f8fafc;
-}
-
-/* Custom Sleek Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-}
-
-/* Focus Ring Accessibility */
 .focus-ring {
-  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900;
+  outline: none;
 }
-
-/* Shimmer Animation for Skeleton Loader */
+.focus-ring:focus-visible {
+  box-shadow: var(--focus-ring);
+}
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
-
 .animate-shimmer {
-  position: relative;
   overflow: hidden;
+  position: relative;
 }
-
 .animate-shimmer::after {
-  content: '';
+  animation: shimmer 1.8s infinite;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.09),
+    transparent
+  );
+  content: "";
+  inset: 0;
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
   transform: translateX(-100%);
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.2) 20%,
-    rgba(255, 255, 255, 0.5) 60%,
-    rgba(255, 255, 255, 0)
-  );
-  animation: shimmer 2s infinite;
-}
-
-.dark .animate-shimmer::after {
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.03) 20%,
-    rgba(255, 255, 255, 0.08) 60%,
-    rgba(255, 255, 255, 0)
-  );
 }

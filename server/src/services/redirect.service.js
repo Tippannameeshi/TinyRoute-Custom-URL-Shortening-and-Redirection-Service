@@ -42,7 +42,10 @@ class RedirectService {
     });
 
     // Increment click counter
-    await UrlRepository.incrementClickCount(urlRecord.id);
+    const incrementResult = await UrlRepository.incrementClickCount(urlRecord.id);
+    if (incrementResult.affectedRows === 0) {
+      throw new ForbiddenError("This short URL has reached its maximum click limit.", "URL_MAX_CLICKS_REACHED");
+    }
 
     return {
       isPasswordProtected: false,
@@ -86,7 +89,10 @@ class RedirectService {
       console.error("Failed to record click analytics:", err.message);
     });
 
-    await UrlRepository.incrementClickCount(urlRecord.id);
+    const incrementResult = await UrlRepository.incrementClickCount(urlRecord.id);
+    if (incrementResult.affectedRows === 0) {
+      throw new ForbiddenError("This short URL has reached its maximum click limit.", "URL_MAX_CLICKS_REACHED");
+    }
 
     return { original_url: urlRecord.original_url };
   }

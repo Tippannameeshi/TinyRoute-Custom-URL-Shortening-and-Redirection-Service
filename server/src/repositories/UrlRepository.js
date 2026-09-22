@@ -116,8 +116,10 @@ class UrlRepository extends BaseRepository {
   }
 
   async incrementClickCount(id) {
-    await this.query(
-      `UPDATE urls SET click_count = click_count + 1 WHERE id = ?`,
+    return this.query(
+      `UPDATE urls
+       SET click_count = click_count + 1
+       WHERE id = ? AND (max_clicks IS NULL OR click_count < max_clicks)`,
       [id]
     );
   }

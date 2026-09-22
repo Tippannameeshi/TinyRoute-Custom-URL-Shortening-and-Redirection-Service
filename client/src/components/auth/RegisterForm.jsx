@@ -98,16 +98,22 @@ export const RegisterForm = () => {
       return;
     }
 
+    if (formData.password.length < 8 || !/[A-Z]/.test(formData.password) || !/[0-9]/.test(formData.password)) {
+      setError("Password must be at least 8 characters long and include an uppercase letter and a number.");
+      return;
+    }
+
     setLoading(true);
 
     try {
       await register(formData);
       navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Registration failed. Please check your details."
-      );
+      const validationErrors = err.response?.data?.errors;
+      const details = Array.isArray(validationErrors)
+        ? validationErrors.map((item) => item.message).filter(Boolean).join(" ")
+        : "";
+      setError(details || err.response?.data?.message || "Registration failed. Please check your details.");
     } finally {
       setLoading(false);
     }
